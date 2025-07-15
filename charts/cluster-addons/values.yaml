@@ -4,49 +4,6 @@
 # if not given, the release name is used
 clusterName:
 
-# Settings for the CNI addon
-cni:
-  # Indicates if a CNI should be deployed
-  enabled: true
-  # The CNI to deploy - supported values are calico or cilium
-  type: calico
-  # Settings for the calico CNI
-  # See https://projectcalico.docs.tigera.io/getting-started/kubernetes/helm
-  calico:
-    chart:
-      repo: https://projectcalico.docs.tigera.io/charts
-      name: tigera-operator
-      version: v3.29.3
-    release:
-      namespace: tigera-operator
-      values:
-        nodeSelector:
-          node-role.kubernetes.io/control-plane: ""
-    # Nova metadata service
-    # See https://docs.openstack.org/nova/latest/user/metadata.html#the-metadata-service
-    globalNetworkPolicy:
-      denyNamespaceSelector: kubernetes.io/metadata.name != 'openstack-system'
-      allowPriority: 20
-      denyPriority: 10
-      allowEgressCidrs:
-        - "0.0.0.0/0"
-      denyEgressCidrs:
-        - "169.254.169.254/32"
-      allowv6EgressCidrs:
-        - "::/0"
-      denyv6EgressCidrs:
-        - "fe80::a9fe:a9fe/128"
-  # Settings for the Cilium CNI
-  # See https://docs.cilium.io/en/stable/gettingstarted/k8s-install-helm/ for details
-  cilium:
-    chart:
-      repo: https://helm.cilium.io/
-      name: cilium
-      version: 1.17.0
-    release:
-      namespace: kube-system
-      values: {}
-
 # Settings for CSI addons
 csi:
   # Settings for the CephFS CSI
@@ -177,32 +134,6 @@ openstack:
       repo: https://catalyst-cloud.github.io/capi-plugin-helm-charts
       name: k8s-keystone-auth
       version: 1.4.0
-
-# Settings for etcd defragmentation jobs
-etcdDefrag:
-  # Indicates if the etcd defragmentation job should be enabled
-  enabled: true
-  chart:
-    repo: https://azimuth-cloud.github.io/capi-helm-charts
-    name: etcd-defrag
-    version:  # Defaults to the same version as this chart
-  release:
-    # This should be namespace in which the etcd pods are deployed
-    namespace: kube-system
-    values: {}
-
-# Settings for the metrics server
-# https://github.com/kubernetes-sigs/metrics-server#helm-chart
-metricsServer:
-  # Indicates if the metrics server should be deployed
-  enabled: true
-  chart:
-    repo: https://kubernetes-sigs.github.io/metrics-server
-    name: metrics-server
-    version: 3.12.2
-  release:
-    namespace: kube-system
-    values: {}
 
 # Settings for the Kubernetes dashboard
 # https://github.com/kubernetes/dashboard/tree/master/charts/helm-chart/kubernetes-dashboard

@@ -19,6 +19,14 @@ spec:
   {{- if .manageSecurityGroups }}
   managedSecurityGroups:
     allowAllInClusterTraffic: {{ .allowAllInClusterTraffic }}
+    allNodesSecurityGroupRules:
+    - description: ssh access
+      direction: ingress
+      etherType: IPv4
+      name: ssh
+      portRangeMax: 22
+      portRangeMin: 22
+      protocol: tcp
   {{- end }}
   {{- with .externalNetworkId }}
   externalNetwork:

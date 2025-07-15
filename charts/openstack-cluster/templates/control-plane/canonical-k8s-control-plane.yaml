@@ -1,0 +1,36 @@
+---   
+apiVersion: controlplane.cluster.x-k8s.io/v1beta2
+kind: CK8sControlPlane
+metadata:
+  name: {{ include "openstack-cluster.componentName" (list . "control-plane") }}
+  labels: {{ include "openstack-cluster.componentLabels" (list . "control-plane") | nindent 4 }}
+  annotations:
+    # We let Cluster API clean up the control plane resource
+    # Deleting it ourselves, which CAPI is not expecting, can cause some nasty race conditions
+    helm.sh/resource-policy: keep
+spec:
+  spec:
+    controlPlane:
+      cloudProvider: external
+    extraKubeletArgs:
+      --provider-id: openstack:///{{ "{{" }} instance_id {{ "}}" }}
+  version: v{{
+    .Values.controlPlane.kubernetesVersion |
+      default .Values.kubernetesVersion |
+      required "One of .Values.controlPlane.kubernetesVersion or .Values.kubernetesVersion is required" |
+      trimPrefix "v"
+  }}
+  replicas: {{ .Values.controlPlane.machineCount }}
+  remediationStrategy: {{ toYaml .Values.controlPlane.remediationStrategy | nindent 4 }}
+  rolloutStrategy: {{ toYaml .Values.controlPlane.rolloutStrategy | nindent 4 }}
+  machineTemplate:
+    metadata:
+      labels: {{ include "openstack-cluster.componentSelectorLabels" (list . "control-plane") | nindent 8 }}
+    infrastructureTemplate:
+      kind: OpenStackMachineTemplate
+      apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+      name: {{ include "openstack-cluster.controlplane.mt.name" . }}
+      namespace: {{ .Release.Namespace }}
+    nodeDrainTimeout: {{ .Values.controlPlane.nodeDrainTimeout }}
+    nodeVolumeDetachTimeout: {{ .Values.controlPlane.nodeVolumeDetachTimeout }}
+    nodeDeletionTimeout: {{ .Values.controlPlane.nodeDeletionTimeout }}

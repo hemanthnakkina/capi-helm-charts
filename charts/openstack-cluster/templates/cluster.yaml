@@ -9,7 +9,7 @@ spec:
   clusterNetwork: {{ .Values.kubeNetwork | toYaml | nindent 4 }}
   controlPlaneRef:
     apiVersion: controlplane.cluster.x-k8s.io/v1beta1
-    kind: KubeadmControlPlane
+    kind: CK8sControlPlane
     name: {{ include "openstack-cluster.componentName" (list . "control-plane") }}
     namespace: {{ .Release.Namespace }}
   infrastructureRef:

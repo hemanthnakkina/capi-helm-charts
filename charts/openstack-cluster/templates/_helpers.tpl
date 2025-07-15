@@ -193,6 +193,39 @@ filter:
 {{- end }}
 
 {{/*
+Outputs the content for a ck8s bootstrap configuration.
+*/}}
+{{- define "openstack-cluster.ck8sBootstrapConfig" -}}
+cluster-config:
+  annotations:
+    k8sd/v1alpha/lifecycle/skip-cleanup-kubernetes-node-on-remove: "true"
+    k8sd/v1alpha/lifecycle/skip-stop-services-on-remove: "true"
+  network:
+    enabled: true
+  dns:
+    enabled: true
+{{- if $.Values.kubeNetwork.serviceDomain }}
+    cluster-domain: {{ .Values.kubeNetwork.serviceDomain }}
+{{- end }}
+{{- if $.Values.clusterNetworking.dnsNameservers }}
+    upstream-nameservers: {{ .Values.clusterNetworking.dnsNameservers }}
+{{- end }}
+  local-storage:
+    enabled: true
+    reclaim-policy: Retain
+  metrics-server:
+    enabled: true
+  load-balancer:
+    enabled: true
+    l2-mode: true
+  ingress:
+    enabled: {{ .Values.addons.ingress.enabled }}
+  gateway:
+    enabled: False
+{{- end }}
+
+
+{{/*
 Outputs the content for a containerd registry file containing mirror configuration.
 */}}
 {{- define "openstack-cluster.registryFile" -}}
